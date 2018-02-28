@@ -75,10 +75,10 @@ static int oncp_can_gen_tokencode(struct openconnect_info *vpninfo,
 	    vpninfo->token_bypassed)
 		return -EINVAL;
 
-	if (strcmp(form->auth_id, "frmDefender") &&
+/*	if (strcmp(form->auth_id, "frmDefender") &&
 	    strcmp(form->auth_id, "frmNextToken") &&
 	    strcmp(form->auth_id, "ftmTotpToken"))
-		return -EINVAL;
+		return -EINVAL; */
 
 	return can_gen_tokencode(vpninfo, form, opt);
 }
@@ -576,6 +576,15 @@ int oncp_obtain_cookie(struct openconnect_info *vpninfo)
 	struct oc_auth_form *form = NULL;
 	char *form_id = NULL;
 	int try_tncc = !!vpninfo->csd_wrapper;
+
+#ifdef HAVE_LIBSTOKEN
+    /* Step 1: Unlock software token (if applicable) */
+    if (vpninfo->token_mode == OC_TOKEN_MODE_STOKEN) {
+        ret = prepare_stoken(vpninfo);
+        if (ret)
+            goto out;
+    }
+#endif
 
 	resp_buf = buf_alloc();
 	if (buf_error(resp_buf))

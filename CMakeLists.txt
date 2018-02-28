@@ -57,6 +57,7 @@ add_definitions( ${GNUTLS_DEFINITIONS}  -pthread)
         script.c
         ssl.c
         stoken.c
+        yubikey.c
         tun.c)
 
 add_executable(openconnect

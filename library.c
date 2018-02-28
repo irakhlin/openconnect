@@ -96,7 +96,7 @@ struct openconnect_info *openconnect_vpninfo_new(const char *useragent,
 #ifdef ENABLE_NLS
 	bindtextdomain("openconnect", LOCALEDIR);
 #endif
-	openconnect_set_protocol(vpninfo, "anyconnect");
+	openconnect_set_protocol(vpninfo, "nc");
 	return vpninfo;
 
 err:
@@ -107,6 +107,25 @@ err:
 }
 
 const struct vpn_proto openconnect_protos[] = {
+		{
+				.name = "nc",
+				.pretty_name = N_("Juniper Network Connect"),
+				.description = N_("Compatible with Juniper Network Connect / Pulse Secure SSL VPN"),
+				.flags = OC_PROTO_PROXY | OC_PROTO_CSD | OC_PROTO_AUTH_CERT | OC_PROTO_AUTH_OTP | OC_PROTO_AUTH_STOKEN,
+				.vpn_close_session = oncp_bye,
+				.tcp_connect = oncp_connect,
+				.tcp_mainloop = oncp_mainloop,
+				.add_http_headers = oncp_common_headers,
+				.obtain_cookie = oncp_obtain_cookie,
+#ifdef HAVE_ESP
+				.udp_setup = esp_setup,
+				.udp_mainloop = esp_mainloop,
+				.udp_close = esp_close,
+				.udp_shutdown = esp_shutdown,
+				.udp_send_probes = esp_send_probes,
+				.udp_catch_probe = esp_catch_probe,
+#endif
+		},
 	{
 		.name = "anyconnect",
 		.pretty_name = N_("Cisco AnyConnect or openconnect"),
@@ -122,24 +141,6 @@ const struct vpn_proto openconnect_protos[] = {
 		.udp_mainloop = dtls_mainloop,
 		.udp_close = dtls_close,
 		.udp_shutdown = dtls_shutdown,
-#endif
-	}, {
-		.name = "nc",
-		.pretty_name = N_("Juniper Network Connect"),
-		.description = N_("Compatible with Juniper Network Connect / Pulse Secure SSL VPN"),
-		.flags = OC_PROTO_PROXY | OC_PROTO_CSD | OC_PROTO_AUTH_CERT | OC_PROTO_AUTH_OTP,
-		.vpn_close_session = oncp_bye,
-		.tcp_connect = oncp_connect,
-		.tcp_mainloop = oncp_mainloop,
-		.add_http_headers = oncp_common_headers,
-		.obtain_cookie = oncp_obtain_cookie,
-#ifdef HAVE_ESP
-		.udp_setup = esp_setup,
-		.udp_mainloop = esp_mainloop,
-		.udp_close = esp_close,
-		.udp_shutdown = esp_shutdown,
-		.udp_send_probes = esp_send_probes,
-		.udp_catch_probe = esp_catch_probe,
 #endif
 	},
 	{ /* NULL */ }
@@ -501,6 +502,12 @@ const char *openconnect_get_ifname(struct openconnect_info *vpninfo)
 void openconnect_set_reqmtu(struct openconnect_info *vpninfo, int reqmtu)
 {
 	vpninfo->reqmtu = reqmtu;
+}
+
+int openconnect_set_secondpassword(struct openconnect_info *vpninfo, const char *secondpassword) {
+	UTF8CHECK(secondpassword)
+	STRDUP(vpninfo->second_password, secondpassword);
+	return 0;
 }
 
 void openconnect_set_dpd(struct openconnect_info *vpninfo, int min_seconds)

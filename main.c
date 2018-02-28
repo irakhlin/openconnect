@@ -91,6 +91,7 @@ static char *server_cert = NULL;
 
 static char *username;
 static char *password;
+static char *password2;
 static char *authgroup;
 static int authgroup_set;
 static int last_form_empty;
@@ -188,6 +189,7 @@ enum {
 	OPT_LOCAL_HOSTNAME,
 	OPT_PROTOCOL,
 	OPT_PASSTOS,
+	OPT_SECOND_PASSWORD,
 };
 
 #ifdef __sun__
@@ -269,6 +271,7 @@ static const struct option long_options[] = {
 	OPTION("dump-http-traffic", 0, OPT_DUMP_HTTP),
 	OPTION("no-system-trust", 0, OPT_NO_SYSTEM_TRUST),
 	OPTION("protocol", 1, OPT_PROTOCOL),
+    OPTION("secondpassword", 1, OPT_SECOND_PASSWORD),
 #ifdef OPENCONNECT_GNUTLS
 	OPTION("gnutls-debug", 1, OPT_GNUTLS_DEBUG),
 #endif
@@ -826,6 +829,7 @@ static void usage(void)
 	printf("  -S, --script-tun                %s\n", _("Pass traffic to 'script' program, not tun"));
 #endif
 	printf("  -u, --user=NAME                 %s\n", _("Set login username"));
+    printf("      --secondpassword=SECONDPASS %s\n", _("Set second password"));
 	printf("  -V, --version                   %s\n", _("Report version number"));
 	printf("  -v, --verbose                   %s\n", _("More output"));
 	printf("      --dump-http-traffic         %s\n", _("Dump HTTP authentication traffic (implies --verbose"));
@@ -1266,6 +1270,10 @@ int main(int argc, char **argv)
 			break;
 		case OPT_DTLS_CIPHERS:
 			vpninfo->dtls_ciphers = keep_config_arg();
+			break;
+		case OPT_SECOND_PASSWORD:
+			vpninfo->second_password = keep_config_arg();
+			password2 = vpninfo->second_password;
 			break;
 		case OPT_AUTHGROUP:
 			authgroup = keep_config_arg();
@@ -1986,7 +1994,11 @@ static int process_auth_form_cb(void *_vpninfo,
 			empty = 0;
 
 		} else if (opt->type == OC_FORM_OPT_PASSWORD) {
-			if (password &&
+			if (!strcmp(opt->name, "password#2")) {
+				opt->_value = vpninfo->second_password;
+				password2 = NULL;
+			}
+			else if (password &&
 			    !strcmp(opt->name, "password")) {
 				opt->_value = password;
 				password = NULL;

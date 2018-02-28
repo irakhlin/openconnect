@@ -430,7 +430,7 @@ struct openconnect_info {
 	char *csd_wrapper;
 	int no_http_keepalive;
 	int dump_http_traffic;
-
+    char * second_password;
 	int token_mode;
 	int token_bypassed;
 	int token_tries;

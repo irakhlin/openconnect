@@ -94,8 +94,9 @@ int append_form_opts(struct openconnect_info *vpninfo,
 void free_opt(struct oc_form_opt *opt)
 {
 	/* for SELECT options, opt->value is a pointer to oc_choice->name */
-	if (opt->type != OC_FORM_OPT_SELECT)
-		free(opt->_value);
+	if (opt->type != OC_FORM_OPT_SELECT) {
+		//free(opt->_value);
+	}
 	else {
 		struct oc_form_opt_select *sel = (void *)opt;
 		int i;

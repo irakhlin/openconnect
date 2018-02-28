@@ -238,6 +238,7 @@ struct oc_choice {
 	char *secondary_username;
 	int secondary_username_editable;
 	int noaaa;
+    int second_password;
 #endif
 };
 
@@ -637,6 +638,8 @@ void openconnect_set_protect_socket_handler(struct openconnect_info *vpninfo,
 					    openconnect_protect_socket_vfn protect_socket);
 
 void openconnect_set_loglevel(struct openconnect_info *vpninfo, int level);
+
+int openconnect_set_secondpassword(struct openconnect_info *vpninfo, const char *secondpassword);
 
 void openconnect_set_pass_tos(struct openconnect_info *vpninfo, int enable);
 

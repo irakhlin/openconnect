@@ -77,7 +77,7 @@
 /* #undef HAVE_LIBP11 */
 
 /* Have libpcsclite */
-//#define HAVE_LIBPCSCLITE 1
+#define HAVE_LIBPCSCLITE 1
 
 /* Have libpskc */
 #define HAVE_LIBPSKC 1
@@ -160,6 +160,9 @@
 /* libproxy header file */
 #define LIBPROXY_HDR "proxy.h"
 
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
+#define LT_OBJDIR ".libs/"
+
 /* Using GnuTLS */
 #define OPENCONNECT_GNUTLS 1
 
@@ -182,7 +185,7 @@
 #define PACKAGE_TARNAME "openconnect"
 
 /* Define to the home page for this package. */
-#define PACKAGE_URL "https://github.com/irakhlin/openconnect"
+#define PACKAGE_URL ""
 
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "7.08"
